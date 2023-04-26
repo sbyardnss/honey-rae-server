@@ -17,11 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
-from repairsapi.views import register_user, login_user, CustomerView
+from repairsapi.views import register_user, login_user, CustomerView, EmployeeView, TicketView
 from rest_framework import routers
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'customers', CustomerView, 'customer')
+router.register(r'employees', EmployeeView, 'employee')
+router.register(r'tickets', TicketView, 'ticket')
 
 urlpatterns = [
     path('register', register_user),
