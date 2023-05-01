@@ -16,9 +16,12 @@ class TicketView(ViewSet):
                 if request.query_params['status'] == "done":
                     tickets = tickets.filter(date_completed__isnull=False)
                 if request.query_params['status'] == "unclaimed":
-                    tickets = tickets.filter(date_completed__isnull=True, employee__isnull=True)
+                    tickets = tickets.filter(date_completed__isnull=True, employee=None)
                 if request.query_params['status'] == "inprogress":
-                    tickets = tickets.filter(date_completed__isnull=True, employee__isnull=False) 
+                    tickets = tickets.filter(date_completed__isnull=True, employee__isnull=False)
+            if "search" in request.query_params:
+                print(request.query_params)
+                tickets = tickets.filter(description__icontains=request.query_params['search'])
         else:
             tickets = ServiceTicket.objects.filter(customer__user=request.auth.user)
         serialized = TicketSerializer(tickets, many=True)
