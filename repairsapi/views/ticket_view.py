@@ -15,6 +15,10 @@ class TicketView(ViewSet):
             if "status" in request.query_params:
                 if request.query_params['status'] == "done":
                     tickets = tickets.filter(date_completed__isnull=False)
+                if request.query_params['status'] == "unclaimed":
+                    tickets = tickets.filter(date_completed__isnull=True, employee__isnull=True)
+                if request.query_params['status'] == "inprogress":
+                    tickets = tickets.filter(date_completed__isnull=True, employee__isnull=False) 
         else:
             tickets = ServiceTicket.objects.filter(customer__user=request.auth.user)
         serialized = TicketSerializer(tickets, many=True)
@@ -42,6 +46,7 @@ class TicketView(ViewSet):
         employee_id = request.data['employee']
         assigned_employee = Employee.objects.get(pk=employee_id)
         ticket.employee = assigned_employee
+        ticket.date_completed = request.data['date_completed'] if request.data['date_completed'] is not None else None
         ticket.save()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
     def destroy(self, request, pk=None):
